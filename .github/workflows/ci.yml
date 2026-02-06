@@ -24,8 +24,8 @@ jobs:
     - name: NPM install the package
       run: npm install
     - name: Run frontend
-      run: npm run start
+      run: npm run start &
     - name: Run backend
-      run: npm run server
+      run: npm run server &
     - name: Run test
       run: npm test
