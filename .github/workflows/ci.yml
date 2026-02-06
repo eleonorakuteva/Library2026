@@ -22,8 +22,9 @@ jobs:
         cache: 'npm'
     - name: Install node modules
       run: npm install
-    # - name: Manually change the config file
-      # run: echo "export const settings = { host:\"http://localhost:3030\" };" > src/config.js
+    - name: Manually change the config file
+      run: echo "export const settings = { host:\"http://localhost:3030\" };" > src/config.js
+    
     - name: Start the Backend
       run: npm run start-be &
     - name: Start the FrontEnd
