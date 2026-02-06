@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build_and_test:
 
     runs-on: ubuntu-latest
 
@@ -16,13 +16,17 @@ jobs:
     steps:
     - name: Checkout the repo
       uses: actions/checkout@v4
+
     - name: Use Node.js 20
       uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'npm'
+    
     - name: NPM install the package
       run: npm install
+
+
     - name: Run frontend
       run: npm run start &
 
@@ -34,3 +38,37 @@ jobs:
 
     - name: Run test
       run: npm test
+
+  deploy b_end:
+  # first -> build_and_test
+  # after -> deploy
+  needs: build_and_test
+
+  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Deploy to Render
+      uses: JorgeLNJunior/render-deploy@v1.4.7
+    with:
+      service_id: ${{ secrets.BACKEND_SERVICE }}
+      api_key: ${{ secrets.RENDER_API_KEY }}
+      wait_deploy: true
+
+  deploy f_end:
+    # first -> deploy b_end
+    # after -> deploy f_end
+    needs: deploy b_end
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Render
+      uses: JorgeLNJunior/render-deploy@v1.4.7
+      with:
+        service_id: ${{ secrets.FRONTEND_SERVICE }}
+        api_key: ${{ secrets.RENDER_API_KEY }}
+        wait_deploy: true
+
